@@ -72,11 +72,33 @@ class VisualController extends Controller
             'message' => 'visual not found',
             'error' => true,
             'data' => error_log()
-        ]);
+        ], 404);
     }
 
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
 
+    public function getAllYears() {
+        $years = Visual::select('year')->get();
+
+        if ($years) {
+            return response()->json([
+                'message' => 'success returning years',
+                'error' => false,
+                'data' => $years,
+            ], 200);
+        }
+            return response()->json([
+                'message' => 'failed returning years',
+                'error' => true,
+            ], 404);
+
+    }
 
 
     /**

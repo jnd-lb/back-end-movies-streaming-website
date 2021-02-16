@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c9e828dc-98f7-4aa6-b1bd-29a22e2b3cb4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Controller.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Controller.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/seeds/TypesSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeds/TypesSeeder.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Download_link.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Download_link.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/VisualController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/VisualController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -161,7 +162,7 @@
       <option name="presentableId" value="Default" />
       <updated>1613428585302</updated>
       <workItem from="1613428587880" duration="15644000" />
-      <workItem from="1613474879240" duration="1832000" />
+      <workItem from="1613474879240" duration="3332000" />
     </task>
     <servers />
   </component>

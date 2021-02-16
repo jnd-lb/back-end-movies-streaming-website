@@ -16,4 +16,5 @@ class Download_link extends Model
         return $this->belongsToMany(Download_link::class);
     }
 
+
 }
