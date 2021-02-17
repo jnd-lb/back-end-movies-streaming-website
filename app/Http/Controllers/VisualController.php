@@ -181,13 +181,13 @@ class VisualController extends Controller
                 'meesage' => 'visual updated',
                 'error' => false,
                 'data' => $visual
-            ]);
+            ], 200);
         } else {
 
             return response()->json([
                 'message' => 'failed updating visual',
                 'error' => true,
-            ]);
+            ], 404);
         }
 
 
@@ -201,6 +201,19 @@ class VisualController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $visual = Visual::findOrFail($id);
+
+        if ($visual) {
+            $visual->delete();
+            return response()->json([
+                'message' => 'successfully deleted visual with id = '. $id,
+                'error' => false
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'failed deletion.. visual not found',
+            'error' => true,
+        ], 404);
     }
 }
