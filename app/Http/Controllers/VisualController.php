@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreVisualRequest;
 use App\Visual;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class VisualController extends Controller
@@ -120,18 +121,31 @@ class VisualController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function uploadVisual(StoreVisualRequest $request)
+    public function uploadVisual(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'movie_title'       => 'required|max:255',
+            'duration'          => 'required',
+            'language_id'       => 'required',
+            'description'       => 'string|required',
+            'movie_trailer'     => 'string|required',
+            'year'              => 'date|required',
+            'type_id'           => 'required',
+            'poster_image_link' => 'required|regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'slug'              => 'string',
+        ]);
+
         $visual = new Visual();
         $visual->fill($request->all());
 
-        if ($request->hasFile('poster_image_link')) {
-            $poster_image = $request->file('poster_image_link');
-            $movie_name = $request->get('movie_title');
-            $filename = $movie_name. '.' . $poster_image->getClientOriginalExtension();
-            $poster_image->storeAs('public/images/'. $request->get('language_id', $filename) );
-            $visual->poster_image = $poster_image->hashName();
-        }
+//        if ($request->hasFile('poster_image_link')) {
+//            $poster_image = $request->file('poster_image_link');
+//            $movie_name = $request->get('movie_title');
+//            $filename = $movie_name. '.' . $poster_image->getClientOriginalExtension();
+//            $poster_image->storeAs('public/images/'. $request->get('language_id'), $filename);
+//            $visual->poster_image_link = $filename;
+//        }
 
         if ($visual) {
             return response()->json([
@@ -157,7 +171,14 @@ class VisualController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $visual = Visual::findOrFail($id);
+
+        if ($visual) {
+            if (File::exists(public_path('storage/images/'.$visual->language_id). '/' . $visual->poster_image)){
+                File::delete(public_path('storage/images/'.$visual->language->id));
+            }
+        }
+
     }
 
     /**
