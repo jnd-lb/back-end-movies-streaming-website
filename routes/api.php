@@ -22,4 +22,5 @@ Route::get('visual', 'VisualController@searchByName');
 Route::get('visual/years', 'VisualController@getAllYears');
 Route::get('visual/{id}', 'VisualController@show');
 Route::post('visual', 'VisualController@uploadVisual');
+Route::put('visual/{id}', 'VisualController@update');
 

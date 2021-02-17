@@ -138,6 +138,7 @@ class VisualController extends Controller
 
         $visual = new Visual();
         $visual->fill($request->all());
+        $visual->save();
 
 //        if ($request->hasFile('poster_image_link')) {
 //            $poster_image = $request->file('poster_image_link');
@@ -174,10 +175,21 @@ class VisualController extends Controller
         $visual = Visual::findOrFail($id);
 
         if ($visual) {
-            if (File::exists(public_path('storage/images/'.$visual->language_id). '/' . $visual->poster_image)){
-                File::delete(public_path('storage/images/'.$visual->language->id));
-            }
+            $visual->update($request->all());
+
+            return response()->json([
+                'meesage' => 'visual updated',
+                'error' => false,
+                'data' => $visual
+            ]);
+        } else {
+
+            return response()->json([
+                'message' => 'failed updating visual',
+                'error' => true,
+            ]);
         }
+
 
     }
 
