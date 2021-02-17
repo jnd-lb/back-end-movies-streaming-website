@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreVisualRequest;
 use App\Visual;
 use Illuminate\Http\Request;
 
@@ -36,7 +37,20 @@ class VisualController extends Controller
      */
     public function show($id)
     {
-        //
+        $visual = Visual::where('id',$id)->get();
+
+        if ($visual) {
+            return response()->json([
+                'message' => 'success retrieving visual with id '. $id,
+                'error' => false,
+                'data' => $visual
+            ]);
+        }
+        return response()->json([
+            'message' => 'failed getting speecified visual',
+            'error' => true,
+            'info' => error_log()
+        ]);
     }
 
     /**
@@ -100,6 +114,39 @@ class VisualController extends Controller
 
     }
 
+    /**
+     * Store the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function uploadVisual(StoreVisualRequest $request)
+    {
+        $visual = new Visual();
+        $visual->fill($request->all());
+
+        if ($request->hasFile('poster_image_link')) {
+            $poster_image = $request->file('poster_image_link');
+            $movie_name = $request->get('movie_title');
+            $filename = $movie_name. '.' . $poster_image->getClientOriginalExtension();
+            $poster_image->storeAs('public/images/'. $request->get('language_id', $filename) );
+            $visual->poster_image = $poster_image->hashName();
+        }
+
+        if ($visual) {
+            return response()->json([
+                'message' => 'successfully uploaded visual',
+                'error'   => false,
+                'data'    => $visual
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'failed uploading visual',
+            'error' => true,
+            'data'  => error_log()
+        ], 404);
+    }
 
     /**
      * Update the specified resource in storage.
