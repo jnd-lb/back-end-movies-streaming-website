@@ -16,6 +16,7 @@ class CreateGenreTable extends Migration
             $table->id();
             $table->string("genre_in_arabic");
             $table->string("genre_in_english");
+            $table->timestamps();
         });
     }
 

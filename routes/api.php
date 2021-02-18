@@ -17,3 +17,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route:: get ('genre', 'GenreController@index');
+Route:: post ('genre', 'GenreController@store');
+Route:: get ('genre/{id}','GenreController@show');
+Route:: put ('genre/{id}','GenreController@update');
+Route:: delete ('genre/{id}','GenreController@destroy');
+
