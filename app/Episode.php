@@ -7,7 +7,11 @@ use phpDocumentor\Reflection\Utils;
 
 class Episode extends Model
 {
-    protected $fillable = ['episode_name', 'visual_id', 'duration'];
+    protected $fillable = [
+        'episode_name',
+        'visual_id',
+        'duration'
+    ];
 
     public function visuals() {
         return $this->belongsTo(Visual::class);

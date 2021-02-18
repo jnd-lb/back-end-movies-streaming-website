@@ -24,3 +24,11 @@ Route::get('visual/{id}', 'VisualController@show');
 Route::post('visual', 'VisualController@uploadVisual');
 Route::put('visual/{id}', 'VisualController@update');
 Route::delete('visual/{id}', 'VisualController@destroy');
+
+Route::post('episode', 'EpisodeController@uploadEpisode');
+Route::get('episode/{id}', 'EpisodeController@getAllEpisodes');
+Route::get('episode', 'EpisodeController@retrieve');
+Route::get('streaming-links/{id}', 'EpisodeController@getAllStreamingLinks');
+
+Route::post('streaminglink', 'StreamingLinkController@create');
+
