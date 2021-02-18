@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Episode;
 use App\Visual;
 use Exception;
 use Illuminate\Http\Request;
@@ -69,7 +70,28 @@ class SeriesController extends Controller
        }
     }
 
+    public function getEpisodes(){
 
+         try {
+             $episodes = Visual::where('type_id', '1')
+                 ->with('episodes')
+                 ->get()
+             ;
+             return response()->json([
+                 'error' => false,
+                 'message' => "The episodes has been added retrieved successfully",
+                 'data' => $episodes
+             ],201);
+
+         } catch(\Illuminate\Database\QueryException $exception){
+                 $errorInfo = $exception->errorInfo;
+                 return response()->json([
+                     'error' => true,
+                     'message' => "Internal error occured",
+                     'data' => $errorInfo
+                 ],500);
+             }
+     }
 }
 
 

@@ -109,31 +109,6 @@ class EpisodeController extends Controller
             ],500);
         }
     }
-    /**
-     * Retrieve All streaming links for an episode.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-
-    public function getAllStreamingLinks($id){
-
-        try {
-            $streaming_links = Episode::findOrFail($id)->with('streaming_links')->get();
-            return response()->json([
-                'error' => false,
-                'message' => 'sucess retrieving data',
-                'data' => $streaming_links
-            ], 200);
-        } catch (\Illuminate\Database\QueryException $exception) {
-            $errorInfo = $exception->errorInfo;
-            return response()->json([
-                'error' => true,
-                'message' => "Internal error occured"
-            ],500);
-        }
-
-    }
 
 }
 

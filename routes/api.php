@@ -30,5 +30,4 @@ Route::get('episode/{id}', 'EpisodeController@getAllEpisodes');
 Route::get('episode', 'EpisodeController@retrieve');
 Route::get('streaming-links/{id}', 'EpisodeController@getAllStreamingLinks');
 
-Route::post('streaminglink', 'StreamingLinkController@create');
-
+Route::get('serieEpisodes', 'SeriesController@getEpisodes');
