@@ -108,10 +108,10 @@ class VisualController extends Controller
                 'data' => $years,
             ], 200);
         }
-            return response()->json([
-                'message' => 'failed returning years',
-                'error' => true,
-            ], 404);
+        return response()->json([
+            'message' => 'failed returning years',
+            'error' => true,
+        ], 404);
 
     }
 
