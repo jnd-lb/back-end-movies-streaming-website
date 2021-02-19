@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreVisualRequest;
+use App\Streaming_link;
 use App\Visual;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
-class VisualController extends Controller
+class MovieController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -216,4 +217,35 @@ class VisualController extends Controller
             'error' => true,
         ], 404);
     }
+
+    /**
+     * get all movies streaming links.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+
+    public function getStreamingLinks($id) {
+
+        try {
+            $streamingLinks = Streaming_link::with('visuals')->get();
+            return response()->json([
+                'error' => false,
+                'message' => "The streaming links for moies has been retrieved successfully",
+                'data' => $streamingLinks
+            ],201);
+
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $errorInfo = $exception->errorInfo;
+            return response()->json([
+                'error' => true,
+                'message' => "Internal error occured",
+                'data' => $errorInfo
+            ], 500);
+        }
+
+
+
+    }
 }
+

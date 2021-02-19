@@ -18,12 +18,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('visual', 'VisualController@searchByName');
-Route::get('visual/years', 'VisualController@getAllYears');
-Route::get('visual/{id}', 'VisualController@show');
-Route::post('visual', 'VisualController@uploadVisual');
-Route::put('visual/{id}', 'VisualController@update');
-Route::delete('visual/{id}', 'VisualController@destroy');
+Route::get('visual', 'MovieController@searchByName');
+Route::get('visual/years', 'MovieController@getAllYears');
+Route::get('visual/{id}', 'MovieController@show');
+Route::post('visual', 'MovieController@uploadVisual');
+Route::put('visual/{id}', 'MovieController@update');
+Route::delete('visual/{id}', 'MovieController@destroy');
+Route::get('movie-slinks/{id}', 'MovieController@getStreamingLinks');
 
 Route::post('episode', 'EpisodeController@uploadEpisode');
 Route::get('episode/{id}', 'EpisodeController@getAllEpisodes');

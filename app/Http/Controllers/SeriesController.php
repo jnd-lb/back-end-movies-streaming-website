@@ -14,7 +14,7 @@ class SeriesController extends Controller
         try{
         //
         SeriesController::create(array(
-            //
+            
         ));
 
         return response()->json([
