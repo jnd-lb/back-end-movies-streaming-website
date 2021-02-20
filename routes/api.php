@@ -17,4 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('/episode', 'EpisodeController@index');
+Route::get('/episodes','EpisodeController@index');
+Route::get('/episode/{name}','EpisodeController@show');
+Route::get('/visuals/{filter}/{param}','VisualController@show');
+Route::get('/visuals','VisualController@index');
+Route::get('/visuals/{id}','VisualController@showById');
+

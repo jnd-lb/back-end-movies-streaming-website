@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Episode;
-use App\EpisodeLink;
 use Illuminate\Http\Request;
 
 class EpisodeController extends Controller
@@ -15,8 +14,8 @@ class EpisodeController extends Controller
      */
     public function index()
     {
-        $episode = Episode :: all();
-        return response($episode);
+        $episodes = Episode::with('episodeStreamingLinks')->get();
+        return response($episodes);
     }
 
     /**
@@ -46,9 +45,19 @@ class EpisodeController extends Controller
      * @param  \App\Episode  $episode
      * @return \Illuminate\Http\Response
      */
-    public function show( $episode)
+    public function show($name)
     {
-  
+        $episode = Episode::where('episode_name',$name)
+        ->with('episodeStreamingLinks')
+        ->with('downloadLinks')
+        ->get();
+        return response()->json([
+            'data'=> $episode,
+        ],200);
+
+        return response()->json([
+            'message'=>'Not Found'
+        ],404);
     }
 
     /**
