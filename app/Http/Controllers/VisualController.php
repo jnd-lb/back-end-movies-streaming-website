@@ -73,7 +73,6 @@ class VisualController extends Controller
                 $visuals = Visual::with('type')
                 ->where('type_id',3)
                 ->with('genre')
-                ->with('episode')
                 ->with('visualDescription')
                 ->get();
                 return response($visuals);
@@ -84,7 +83,6 @@ class VisualController extends Controller
                 $visuals = Visual::with('type')
                 ->where('type_id',1)
                 ->with('genre')
-                ->with('episode')
                 ->with('visualDescription')
                 ->get();
                 return response($visuals);
@@ -107,7 +105,11 @@ class VisualController extends Controller
         else if($filter=='year')
         {
             
-            $visuals = Visual::whereYear('year', $param)->get();
+            $visuals = Visual::whereYear('year', $param)
+            ->with('type')
+            ->with('genre')
+            ->with('visualDescription')
+            ->get();
             return response($visuals);
         }
         else
@@ -127,6 +129,20 @@ class VisualController extends Controller
                 ->with('genre')
                 ->with('episode')
                 ->with('visualDescription')
+                ->get();
+                return response($visuals);
+           
+                return response()->json([
+                    'message'=>"params not found"
+                ], 404);
+                
+    }
+    public function showByName($name)
+    {
+               // dd($name);
+                $visuals = Visual::where('movie_title',$name)
+                ->with('type')
+                ->with('genre')
                 ->get();
                 return response($visuals);
            
