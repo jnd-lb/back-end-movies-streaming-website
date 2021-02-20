@@ -32,7 +32,12 @@ class Visual extends Model
     }
 
     public function streaming_links() {
-        return $this->belongsToMany(Streaming_link::class);
+        return $this->belongsToMany(
+            Streaming_link::class,
+            'streaming_link_visual',
+            'visual_id',
+            'streaming_link_id'
+        );
     }
 
     public function download_links() {

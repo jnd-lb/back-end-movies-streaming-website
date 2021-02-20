@@ -9,7 +9,12 @@ class Streaming_link extends Model
     protected $fillable = ['description', 'link'];
 
     public function visuals() {
-        return $this->belongsToMany(Visual::class);
+        return $this->belongsToMany(
+            Visual::class,
+            'streaming_link_visual',
+            'streaming_link_id',
+            'visual_id'
+        );
     }
 
     public function episodes() {

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMovieStreamingLink extends Migration
+class CreateDownloadLinkVisualTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class CreateMovieStreamingLink extends Migration
      */
     public function up()
     {
-        Schema::create('movie_streaming_link', function (Blueprint $table) {
+        Schema::create('download_link_visual', function (Blueprint $table) {
             $table->id();
-            
+
             $table->unsignedBigInteger('visual_id');
             $table->foreign('visual_id')->references('id')->on('visuals');
-            
-            $table->unsignedBigInteger('streaming_link_id');
-            $table->foreign('streaming_link_id')->references('id')->on('streaming_links');
+
+            $table->unsignedBigInteger('download_link_id');
+            $table->foreign('download_link_id')->references('id')->on('download_links');
+
         });
     }
 
@@ -31,6 +32,6 @@ class CreateMovieStreamingLink extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('movie_streaming_link');
+        Schema::dropIfExists('download_link_visual');
     }
 }

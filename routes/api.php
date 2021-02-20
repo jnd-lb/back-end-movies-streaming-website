@@ -18,17 +18,36 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+/*
+|--------------------------------------------------------------------------
+| Movie Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::get('visual', 'MovieController@searchByName');
 Route::get('visual/years', 'MovieController@getAllYears');
 Route::get('visual/{id}', 'MovieController@show');
 Route::post('visual', 'MovieController@uploadVisual');
 Route::put('visual/{id}', 'MovieController@update');
 Route::delete('visual/{id}', 'MovieController@destroy');
-Route::get('movie-slinks/{id}', 'MovieController@getStreamingLinks');
 
+// get streaming link for a single movie
+Route::get('mslinks/{id}', 'MovieController@getStreamingLinks');
+
+/*
+|--------------------------------------------------------------------------
+| Episode Routes
+|--------------------------------------------------------------------------
+*/
 Route::post('episode', 'EpisodeController@uploadEpisode');
 Route::get('episode/{id}', 'EpisodeController@getAllEpisodes');
 Route::get('episode', 'EpisodeController@retrieve');
-Route::get('streaming-links/{id}', 'EpisodeController@getAllStreamingLinks');
 
-Route::get('serieEpisodes', 'SeriesController@getEpisodes');
+//Route::get('serieEpisodes', 'SeriesController@getEpisodes');
+
+/*
+|--------------------------------------------------------------------------
+| Streaming_links Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('slink', 'StreamingLinkController@create');

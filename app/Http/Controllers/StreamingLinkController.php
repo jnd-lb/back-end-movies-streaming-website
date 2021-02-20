@@ -12,13 +12,14 @@ class StreamingLinkController extends Controller
 
         try{
         //
-        Streaming_link::create(array(
-            $request->all()
-        ));
+        $slinks = new Streaming_link();
+        $slinks->fill($request->all());
+        $slinks->save();
 
         return response()->json([
             'error' => false,
-            'message' => "The streaming link has been added successfully"
+            'message' => "The streaming link has been added successfully",
+            'data' => $slinks
         ],201);
 
     }catch (\Illuminate\Database\QueryException $exception) {
@@ -33,10 +34,10 @@ class StreamingLinkController extends Controller
 
    public function retrieve(Request $request){
       try{
-          $streaming_link = Streaming_link::paginate();
+          $streaming_links = Streaming_link::all()->paginate();
           return response()->json([
               'error'=>false,
-              'X'=>$streaming_link
+              'streaming_link'=>$streaming_links
           ],200);
       }
       catch(\Illuminate\Database\QueryException $exception){
@@ -51,13 +52,13 @@ class StreamingLinkController extends Controller
 
     public function update(Request $request,$id){
        try{
-           $streaming_link = Streaming_link::where('id', '=', $id)->first();
+           $streaming_link = Streaming_link::where('id', '=', $id)->get();
            //$X->name = $request['name'];
            $streaming_link->save();
            return response()->json([
             'error'=>false,
             'message'=>'The StreamingLinkController has been updated successfully',
-            'X'=>$streaming_link
+            'streaming_link'=>$streaming_link
            ],200);
        }
       catch(\Illuminate\Database\QueryException $exception){

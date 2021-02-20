@@ -7,6 +7,8 @@ use App\Streaming_link;
 use App\Visual;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Psy\Util\Str;
+use Symfony\Component\Console\Input\Input;
 
 class MovieController extends Controller
 {
@@ -129,7 +131,6 @@ class MovieController extends Controller
             'movie_title'       => 'required|max:255',
             'duration'          => 'required',
             'language_id'       => 'required',
-            'description'       => 'string|required',
             'movie_trailer'     => 'string|required',
             'year'              => 'date|required',
             'type_id'           => 'required',
@@ -137,31 +138,49 @@ class MovieController extends Controller
             'slug'              => 'string',
         ]);
 
-        $visual = new Visual();
-        $visual->fill($request->all());
-        $visual->save();
+        try {
+            $visual = new Visual();
+            $visual->fill([
+                'movie_title' => $request->get('movie_title'),
+                'duration' => $request->get('duration'),
+                'language_id' => $request->get('language_id'),
+                'movie_trailer' => $request->get('movie_trailer'),
+                'year' => $request->get('year'),
+                'imdb_rating' => $request->get('imdb_rating'),
+                'type_id' => $request->get('type_id'),
+                'poster_image_link' => $request->get('poster_image_link'),
+                'slug' => $request->get('slug')
+            ]);
 
-//        if ($request->hasFile('poster_image_link')) {
-//            $poster_image = $request->file('poster_image_link');
-//            $movie_name = $request->get('movie_title');
-//            $filename = $movie_name. '.' . $poster_image->getClientOriginalExtension();
-//            $poster_image->storeAs('public/images/'. $request->get('language_id'), $filename);
-//            $visual->poster_image_link = $filename;
-//        }
+            $visual->save();
 
-        if ($visual) {
+            // Get the associated streaming links from the user and trasnfrom it into an array
+//            $slinks = explode(',', $request->get('slinks'));
+
+            $slinks= array_map('intval', explode(',', $request->get('slinks')));
+
+            foreach ($slinks as $slink) {
+                $slink = new Streaming_link();
+                $slink->save();
+            }
+
+            // Insert the array into the pivot table
+            $visual->streaming_links()->attach($slinks);
+
             return response()->json([
                 'message' => 'successfully uploaded visual',
                 'error'   => false,
                 'data'    => $visual
             ], 200);
-        }
 
-        return response()->json([
-            'message' => 'failed uploading visual',
-            'error' => true,
-            'data'  => error_log()
-        ], 404);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $errorInfo = $exception->errorInfo;
+            return response()->json([
+                'error' => true,
+                'message' => "Internal error occured",
+                'errormessage' => $errorInfo
+            ],500);
+        }
     }
 
     /**
@@ -228,11 +247,13 @@ class MovieController extends Controller
     public function getStreamingLinks($id) {
 
         try {
-            $streamingLinks = Streaming_link::with('visuals')->get();
+
+            $visual = Visual::findOrFail($id)->streaming_links;
+
             return response()->json([
                 'error' => false,
-                'message' => "The streaming links for moies has been retrieved successfully",
-                'data' => $streamingLinks
+                'message' => "The streaming links for movies has been retrieved successfully",
+                'data' => $visual
             ],201);
 
         } catch (\Illuminate\Database\QueryException $exception) {
