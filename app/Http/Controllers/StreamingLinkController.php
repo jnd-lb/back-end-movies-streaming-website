@@ -53,7 +53,7 @@ class StreamingLinkController extends Controller
     public function update(Request $request,$id){
        try{
            $streaming_link = Streaming_link::where('id', '=', $id)->get();
-           //$X->name = $request['name'];
+           $streaming_link->streaming_link = $request->get('slink');
            $streaming_link->save();
            return response()->json([
             'error'=>false,

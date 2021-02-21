@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Download_link;
 use App\Http\Requests\StoreVisualRequest;
 use App\Streaming_link;
 use App\Visual;
@@ -154,9 +155,9 @@ class MovieController extends Controller
 
             $visual->save();
 
-            // Get the associated streaming links from the user and trasnfrom it into an array
-//            $slinks = explode(',', $request->get('slinks'));
+            /* -------------------------------- Start: attach streaming links ---------------------------------- */
 
+            // Get the associated streaming links from the user and transfrom it into an array
             $slinks= array_map('intval', explode(',', $request->get('slinks')));
 
             foreach ($slinks as $slink) {
@@ -164,8 +165,23 @@ class MovieController extends Controller
                 $slink->save();
             }
 
+            /* -------------------------------- End: attach streaming links ---------------------------------- */
+
+
+            /* -------------------------------- Start: attach download links ---------------------------------- */
+
+            $dlinks= array_map('intval', explode(',', $request->get('dlinks')));
+
+            foreach ($dlinks as $dlink) {
+                $dlink = new Download_link();
+                $dlink->save();
+            }
+
             // Insert the array into the pivot table
-            $visual->streaming_links()->attach($slinks);
+            $visual->download_links()->attach($dlinks);
+
+            /* -------------------------------- End: attach download links ---------------------------------- */
+
 
             return response()->json([
                 'message' => 'successfully uploaded visual',
@@ -264,9 +280,28 @@ class MovieController extends Controller
                 'data' => $errorInfo
             ], 500);
         }
+    }
 
+    public function getDownloadLinks($id)
+    {
+        try {
 
+            $visual = Visual::findOrFail($id)->download_links;
 
+            return response()->json([
+                'error' => false,
+                'message' => "The streaming links for movies has been retrieved successfully",
+                'data' => $visual
+            ], 201);
+
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $errorInfo = $exception->errorInfo;
+            return response()->json([
+                'error' => true,
+                'message' => "Internal error occured",
+                'data' => $errorInfo
+            ], 500);
+        }
     }
 }
 

@@ -5,21 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MovieController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MovieController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/StreamingLinkController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/StreamingLinkController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Streaming_link.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Streaming_link.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Visual.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Visual.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/database.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/database.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2014_10_12_000000_create_users_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2014_10_12_000000_create_users_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2014_10_12_100000_create_password_resets_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2014_10_12_100000_create_password_resets_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2021_02_13_114528_create_languages_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2021_02_13_114528_create_languages_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2021_02_13_212649_create_genre_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2021_02_13_212649_create_genre_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2021_02_14_212716_create_genre_visuals_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2021_02_14_212716_create_genre_visual_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2021_02_16_085523_create_movie_streaming_link.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2021_02_16_085523_create_streaming_link_visual_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2021_02_16_090130_create_movie_download_link.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2021_02_16_090130_create_download_link_visual_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2021_02_16_113919_create_visuals_description_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2021_02_16_113919_create_description_visual_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/seeds/DatabaseSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeds/DatabaseSeeder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/seeds/GenreSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeds/GenreSeeder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/seeds/LanguageSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeds/LanguageSeeder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/seeds/TypesSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeds/TypesSeeder.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -34,7 +19,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="ali-feature-SeriesController" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -179,7 +164,7 @@
       <workItem from="1613573240816" duration="342000" />
       <workItem from="1613573584247" duration="907000" />
       <workItem from="1613637326784" duration="1048000" />
-      <workItem from="1613710043419" duration="22764000" />
+      <workItem from="1613710043419" duration="24651000" />
     </task>
     <servers />
   </component>

@@ -31,8 +31,12 @@ Route::post('visual', 'MovieController@uploadVisual');
 Route::put('visual/{id}', 'MovieController@update');
 Route::delete('visual/{id}', 'MovieController@destroy');
 
-// get streaming link for a single movie
+/*--------------------------- Get Streaming Links --------------------------*/
 Route::get('mslinks/{id}', 'MovieController@getStreamingLinks');
+
+/*--------------------------- Get Download Links --------------------------*/
+Route::get('mdlinks/{id}', 'MovieController@getDownloadLinks');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -51,3 +55,15 @@ Route::get('episode', 'EpisodeController@retrieve');
 |--------------------------------------------------------------------------
 */
 Route::post('slink', 'StreamingLinkController@create');
+
+
+/*
+|--------------------------------------------------------------------------
+| Download_links Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('dlink', 'DownloadLinkController@create');
+Route::get('dlink', 'DownloadLinkController@retrieve');
+Route::put('dlink/{id}', 'DownloadLinkController@update');
+Route::delete('dlink/{id}', 'DownloadLinkController@destroy');
+
