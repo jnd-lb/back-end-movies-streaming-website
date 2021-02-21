@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Description;
 use App\Download_link;
 use App\Http\Requests\StoreVisualRequest;
 use App\Streaming_link;
@@ -154,6 +155,25 @@ class MovieController extends Controller
             ]);
 
             $visual->save();
+
+
+            /* -------------------------------- Start: add a description ---------------------------------- */
+
+            $description = new Description();
+            $description->visual_id = $visual->id;
+
+            if ($request->get('description_in_arabic')) {
+                $description->description_in_arabic = $request->get('description_in_arabic');
+            }
+            if ($request->get('description_in_english')) {
+                $description->description_in_english = $request->get('description_in_english');
+            }
+
+            $description->save();
+
+            /* -------------------------------- End: add a description ---------------------------------- */
+
+
 
             /* -------------------------------- Start: attach streaming links ---------------------------------- */
 

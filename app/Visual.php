@@ -52,6 +52,10 @@ class Visual extends Model
         return $this->hasOne(Language::class);
     }
 
+    public function descriptions() {
+        return $this->hasOne(DescriptionVisual::class);
+    }
+
 
 
 
