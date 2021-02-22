@@ -7,8 +7,10 @@ use App\Download_link;
 use App\Genre;
 use App\Http\Requests\StoreVisualRequest;
 use App\Streaming_link;
+use App\Type;
 use App\Visual;
 //use Illuminate\Database\Query\Builder;
+use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Psy\Util\Str;
@@ -123,37 +125,44 @@ class MovieController extends Controller
             $language = $request->get('language');
             $imdb = $request->get('imdb');
 
+            if ($genre) {
+                $genreQuery = Visual::whereHas('genres', function ($query) use ($request) {
+                    if ($genre = $request->get('genre')) {
+                        $query
+                            ->where('type_id', 3)
+                            ->where('genre_in_english', $genre)
+                        ;
+                    }
+                })->paginate(10);
 
-            $visuals = Visual::whereHas('genres', function ($query) use ($request) {
-                if ($genre = $request->get('genre')) {
-                    $query
-                        ->where('type_id', 3)
-                        ->where('genre_in_english', $genre)
-                    ;
-                }
+                return response()->json([
+                    'error'=>false,
+                    'message' => "The genres has been retrieved successfully",
+                    'visuals'=> $genreQuery
+                ],200);
+            }
 
-//                elseif ($year = $request->get('year')) {
-//                    $query
-//                        ->where('type_id', 3)
-//                        ->whereYear('year', $year);
-//                } elseif ($type = $request->get('type')) {
-//                    $query
-//                        ->where('type_in_english', $type);
-//                } elseif ($orderType = $request->get('order_type')) {
-//                    $query
-//                        ->where('type_id', 3)
-//                        ->orderBy($orderType);
-//                }
-            })->paginate(10);
+            if ($type) {
+                $typeQuery = Visual::whereHas('types', function ($query) use ($request) {
+                    if ($type = $request->get('type')) {
+                        $query
+                            ->where('type_in_english', $type);
+                    }
+                })->paginate(10);
 
+                return response()->json([
+                    'error'=>false,
+                    'message' => "The genres has been retrieved successfully",
+                    'visuals'=> $typeQuery
+                ],200);
+            }
 
 
             // recheck the code.. make it for the types, ... and also provide sorting options
 
             return response()->json([
                         'error'=>false,
-                        'message' => "The genres has been retrieved successfully",
-                        'visuals'=> $visuals
+                        'message' => "No Queries performed",
                     ],200);
 
         } catch(\Illuminate\Database\QueryException $exception) {

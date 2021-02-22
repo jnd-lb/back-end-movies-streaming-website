@@ -10,7 +10,7 @@ class Type extends Model
 
     // relations
     public function visuals() {
-        $this->belongsToMany(Visual::class);
+        $this->hasMany(Visual::class, 'type_id');
     }
 
 }

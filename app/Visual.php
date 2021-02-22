@@ -22,7 +22,7 @@ class Visual extends Model
     // relation to types table
     public function types()
     {
-        return $this->hasOne(Type::class);
+        return $this->belongsTo(Type::class, 'type_id');
     }
 
     // Ask about the language table (it should be many-to-many)
