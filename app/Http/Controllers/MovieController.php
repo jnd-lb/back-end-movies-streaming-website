@@ -115,7 +115,7 @@ class MovieController extends Controller
         ], 404);
     }
 
-    public function searchByGenre(Request $request)
+    public function searchBy(Request $request)
     {
         try {
 

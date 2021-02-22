@@ -25,7 +25,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 */
 
 Route::get('visual', 'MovieController@searchByName');
-Route::get('visual/search', 'MovieController@searchByGenre');
+Route::get('visual/search', 'MovieController@searchBy');
 
 Route::get('visual/years', 'MovieController@getAllYears');
 Route::get('visual/{id}', 'MovieController@show');
