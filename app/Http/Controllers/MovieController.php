@@ -26,7 +26,9 @@ class MovieController extends Controller
     public function retrieve(){
         try{
 
-            $visuals = Visual::with('genres')->paginate();
+            $visuals = Visual::with('genres')
+                ->orderBy('movie_title', 'asc')
+                ->paginate(10);
 
             return response()->json([
                 'error'=>false,
@@ -115,16 +117,24 @@ class MovieController extends Controller
         ], 404);
     }
 
+    /**
+     * Search for movies based on specified query params.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function searchBy(Request $request)
     {
         try {
 
+            /* -------------- List all request types -------------- */
             $genre = $request->get('genre');
             $year = $request->get('year');
             $type = $request->get('type');
             $language = $request->get('language');
             $imdb = $request->get('imdb');
 
+            /* ------------------------------- start: Genre Query ------------------------------- */
             if ($genre) {
                 $genreQuery = Visual::whereHas('genres', function ($query) use ($request) {
                     if ($genre = $request->get('genre')) {
@@ -133,7 +143,9 @@ class MovieController extends Controller
                             ->where('genre_in_english', $genre)
                         ;
                     }
-                })->paginate(10);
+                })
+                    ->orderBy($genre, 'asc')
+                    ->paginate(10);
 
                 return response()->json([
                     'error'=>false,
@@ -142,13 +154,19 @@ class MovieController extends Controller
                 ],200);
             }
 
+            /* ------------------------------- End: Genre Query ------------------------------- */
+
+
+            /* ------------------------------- start: Type Query ------------------------------- */
             if ($type) {
                 $typeQuery = Visual::whereHas('types', function ($query) use ($request) {
                     if ($type = $request->get('type')) {
                         $query
                             ->where('type_in_english', $type);
                     }
-                })->paginate(10);
+                })
+                    ->orderBy($type, 'asc')
+                    ->paginate(10);
 
                 return response()->json([
                     'error'=>false,
@@ -157,6 +175,11 @@ class MovieController extends Controller
                 ],200);
             }
 
+            /* ------------------------------- End: Type Query ------------------------------- */
+
+
+            /* ------------------------------- start: Year Query ------------------------------- */
+
             if ($year) {
                 $yearQuery = Visual::where(function ($query) use ($request) {
                     if ($year = $request->get('year')) {
@@ -164,7 +187,9 @@ class MovieController extends Controller
                             ->where('type_id', 3)
                             ->whereYear('year', $year);
                     }
-                })->paginate(10);
+                })
+                    ->orderBy($year, 'asc')
+                    ->paginate(10);
 
                 return response()->json([
                     'error'=>false,
@@ -173,6 +198,10 @@ class MovieController extends Controller
                 ],200);
             }
 
+            /* ------------------------------- End: Year Query ------------------------------- */
+
+
+            /* ------------------------------- start: Language Query ------------------------------- */
 
             if ($language) {
                 $languageQuery = Visual::whereHas('languages', function ($query) use ($request) {
@@ -183,7 +212,9 @@ class MovieController extends Controller
                             ->orWhere('language_in_arabic', $language)
                         ;
                     }
-                })->paginate(10);
+                })
+                    ->orderBy($language, 'asc')
+                    ->paginate(10);
 
                 return response()->json([
                     'error'=>false,
@@ -192,6 +223,11 @@ class MovieController extends Controller
                 ],200);
             }
 
+            /* ------------------------------- End: Language Query ------------------------------- */
+
+
+            /* ------------------------------- start: IMDB Query ------------------------------- */
+
             if ($imdb) {
                 $imdbQuery = Visual::where(function ($query) use ($request) {
                     if ($imdb = $request->get('imdb')) {
@@ -199,7 +235,9 @@ class MovieController extends Controller
                             ->where('type_id', 3)
                             ->where('imdb_rating', $imdb);
                     }
-                })->paginate(10);
+                })
+                    ->orderBy($imdb, 'asc')
+                    ->paginate(10);
 
                 return response()->json([
                     'error'=>false,
@@ -208,7 +246,8 @@ class MovieController extends Controller
                 ],200);
             }
 
-            // recheck the code.. make it for the types, ... and also provide sorting options
+            /* ------------------------------- End: IMDB Query ------------------------------- */
+
 
             return response()->json([
                         'error'=>false,
@@ -226,6 +265,23 @@ class MovieController extends Controller
         }
 
     }
+
+//
+//    public function movieSort(Request $request) {
+//
+//        try {
+//
+//        } catch(\Illuminate\Database\QueryException $exception) {
+//            $errorInfo = $exception->errorInfo;
+//            return response()->json([
+//                'error' => true,
+//                'message' => "Internal error occured",
+//                'errorInfo' => $errorInfo
+//            ], 500);
+//
+//        }
+//    }
+//
 
 
     /**
