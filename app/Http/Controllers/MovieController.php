@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Description;
 use App\Download_link;
+use App\Genre;
 use App\Http\Requests\StoreVisualRequest;
 use App\Streaming_link;
 use App\Visual;
+//use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Psy\Util\Str;
@@ -19,9 +21,25 @@ class MovieController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
+    public function retrieve(){
+        try{
+
+            $visuals = Visual::with('genres')->paginate();
+
+            return response()->json([
+                'error'=>false,
+                'message' => "The Download Link has been retrieved successfully",
+                'visuals'=> $visuals
+            ],200);
+        }
+        catch(\Illuminate\Database\QueryException $exception){
+            $errorInfo = $exception->errorInfo;
+            return response()->json([
+                'error' => true,
+                'message' => "Internal error occured"
+            ],500);
+        }
+
     }
 
     /**
@@ -93,6 +111,61 @@ class MovieController extends Controller
             'error' => true,
             'data' => error_log()
         ], 404);
+    }
+
+    public function searchByGenre(Request $request)
+    {
+        try {
+
+            $genre = $request->get('genre');
+            $year = $request->get('year');
+            $type = $request->get('type');
+            $language = $request->get('language');
+            $imdb = $request->get('imdb');
+
+
+            $visuals = Visual::whereHas('genres', function ($query) use ($request) {
+                if ($genre = $request->get('genre')) {
+                    $query
+                        ->where('type_id', 3)
+                        ->where('genre_in_english', $genre)
+                    ;
+                }
+
+//                elseif ($year = $request->get('year')) {
+//                    $query
+//                        ->where('type_id', 3)
+//                        ->whereYear('year', $year);
+//                } elseif ($type = $request->get('type')) {
+//                    $query
+//                        ->where('type_in_english', $type);
+//                } elseif ($orderType = $request->get('order_type')) {
+//                    $query
+//                        ->where('type_id', 3)
+//                        ->orderBy($orderType);
+//                }
+            })->paginate(10);
+
+
+
+            // recheck the code.. make it for the types, ... and also provide sorting options
+
+            return response()->json([
+                        'error'=>false,
+                        'message' => "The genres has been retrieved successfully",
+                        'visuals'=> $visuals
+                    ],200);
+
+        } catch(\Illuminate\Database\QueryException $exception) {
+            $errorInfo = $exception->errorInfo;
+            return response()->json([
+                'error' => true,
+                'message' => "Internal error occured",
+                'errorInfo' => $errorInfo
+            ], 500);
+
+        }
+
     }
 
 
@@ -175,6 +248,23 @@ class MovieController extends Controller
 
 
 
+            /* -------------------------------- Start: attach genre ---------------------------------- */
+
+            $genres = array_map('intval', explode(',', $request->get('genres')));
+
+            foreach ($genres as $genre) {
+                $genre = new Genre();
+                $genre->save();
+            }
+
+            // Insert the array into the pivot table
+            $visual->genres()->attach($genres);
+
+
+            /* -------------------------------- End: attach genre ---------------------------------- */
+
+
+
             /* -------------------------------- Start: attach streaming links ---------------------------------- */
 
             // Get the associated streaming links from the user and transfrom it into an array
@@ -184,6 +274,9 @@ class MovieController extends Controller
                 $slink = new Streaming_link();
                 $slink->save();
             }
+
+            // Insert the array into the pivot table
+            $visual->streaming_links()->attach($slinks);
 
             /* -------------------------------- End: attach streaming links ---------------------------------- */
 
@@ -284,12 +377,12 @@ class MovieController extends Controller
 
         try {
 
-            $visual = Visual::findOrFail($id)->streaming_links;
+            $visual_slinks = Visual::findOrFail($id)->streaming_links;
 
             return response()->json([
                 'error' => false,
                 'message' => "The streaming links for movies has been retrieved successfully",
-                'data' => $visual
+                'data' => $visual_slinks
             ],201);
 
         } catch (\Illuminate\Database\QueryException $exception) {
@@ -306,12 +399,12 @@ class MovieController extends Controller
     {
         try {
 
-            $visual = Visual::findOrFail($id)->download_links;
+            $visual_dlinks = Visual::findOrFail($id)->download_links;
 
             return response()->json([
                 'error' => false,
                 'message' => "The streaming links for movies has been retrieved successfully",
-                'data' => $visual
+                'data' => $visual_dlinks
             ], 201);
 
         } catch (\Illuminate\Database\QueryException $exception) {
@@ -323,5 +416,30 @@ class MovieController extends Controller
             ], 500);
         }
     }
+
+
+
+    public function getGenres($id)
+    {
+        try {
+
+            $visual_genres = Visual::findOrFail($id)->genres;
+
+            return response()->json([
+                'error' => false,
+                'message' => "The streaming links for movies has been retrieved successfully",
+                'data' => $visual_genres
+            ], 201);
+
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $errorInfo = $exception->errorInfo;
+            return response()->json([
+                'error' => true,
+                'message' => "Internal error occured",
+                'data' => $errorInfo
+            ], 500);
+        }
+    }
+
 }
 

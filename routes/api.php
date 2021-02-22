@@ -25,8 +25,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 */
 
 Route::get('visual', 'MovieController@searchByName');
+Route::get('visual/search', 'MovieController@searchByGenre');
+
 Route::get('visual/years', 'MovieController@getAllYears');
 Route::get('visual/{id}', 'MovieController@show');
+Route::get('visual', 'MovieController@retrieve');
 Route::post('visual', 'MovieController@uploadVisual');
 Route::put('visual/{id}', 'MovieController@update');
 Route::delete('visual/{id}', 'MovieController@destroy');
@@ -36,6 +39,9 @@ Route::get('mslinks/{id}', 'MovieController@getStreamingLinks');
 
 /*--------------------------- Get Download Links --------------------------*/
 Route::get('mdlinks/{id}', 'MovieController@getDownloadLinks');
+
+/*--------------------------- Get Genres --------------------------*/
+Route::get('mgenres/{id}', 'MovieController@getGenres');
 
 
 /*

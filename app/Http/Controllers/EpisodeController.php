@@ -44,7 +44,7 @@ class EpisodeController extends Controller
           $episodes = Episode::paginate();
           return response()->json([
               'error'=>false,
-              'X'=>$episodes
+              'episodes'=>$episodes
           ],200);
       }
       catch(\Illuminate\Database\QueryException $exception){
@@ -60,12 +60,11 @@ class EpisodeController extends Controller
     public function update(Request $request, $id){
        try{
            $episode = Episode::where('id', '=', $id)->first();
-           //$X->name = $request['name'];
-           $episode->save();
+           $episode->update($request->only(['episode_name', 'visual_id', 'duration']));
            return response()->json([
             'error'=>false,
             'message'=>'The Episode has been updated successfully',
-            'X'=>$episode
+            'episode'=>$episode
            ],200);
        }
       catch(\Illuminate\Database\QueryException $exception){
@@ -82,26 +81,37 @@ class EpisodeController extends Controller
         try{
 
             $episodes = Episode::where('visual_id', $id)
-                ->get()
+                ->orderBy('id', 'ASC')
+                ->paginate(10)
             ;
 
-//            $episodes = Episode::where([
-//                function ($query) use ($request) {
-//                    if ($visual_id = $request->get('visual_id')) {
-//                        $query->where('visual_id', 'LIKE', '%'.$visual_id.'%' )->get();
-//                    }
-//                }
-//            ])
-//                ->orderBy('id', 'ASC')
-//                ->paginate(10)
-//            ;
-
             return response()->json([
-                'error'=>false,
+                'error' => false,
+                'message' => 'Epsiodes retrieved successfully'  ,
                 'episodes'=>$episodes
             ],200);
         }
         catch(\Illuminate\Database\QueryException $exception){
+            $errorInfo = $exception->errorInfo;
+            return response()->json([
+                'error' => true,
+                'message' => "Internal error occured"
+            ],500);
+        }
+    }
+
+    public function destroy($id) {
+
+         try {
+
+             $episode = Episode::findOrFail($id)->delete();
+
+             return response()->json([
+                 'error' => false,
+                 'message' => 'Epsiode with id = ' . $id .' was deleted successfully'
+             ],200);
+
+         } catch(\Illuminate\Database\QueryException $exception){
             $errorInfo = $exception->errorInfo;
             return response()->json([
                 'error' => true,
