@@ -192,6 +192,21 @@ class MovieController extends Controller
                 ],200);
             }
 
+            if ($imdb) {
+                $imdbQuery = Visual::where(function ($query) use ($request) {
+                    if ($imdb = $request->get('imdb')) {
+                        $query
+                            ->where('type_id', 3)
+                            ->where('imdb_rating', $imdb);
+                    }
+                })->paginate(10);
+
+                return response()->json([
+                    'error'=>false,
+                    'message' => "The movies with imdb: " . $imdb . "has been retrieved successfully",
+                    'visuals'=> $imdbQuery
+                ],200);
+            }
 
             // recheck the code.. make it for the types, ... and also provide sorting options
 
