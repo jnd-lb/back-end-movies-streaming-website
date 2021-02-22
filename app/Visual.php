@@ -49,7 +49,7 @@ class Visual extends Model
     }
 
     public function languages() {
-        return $this->hasOne(Language::class);
+        return $this->belongsTo(Language::class, 'language_id');
     }
 
     public function descriptions() {

@@ -157,6 +157,41 @@ class MovieController extends Controller
                 ],200);
             }
 
+            if ($year) {
+                $yearQuery = Visual::where(function ($query) use ($request) {
+                    if ($year = $request->get('year')) {
+                        $query
+                            ->where('type_id', 3)
+                            ->whereYear('year', $year);
+                    }
+                })->paginate(10);
+
+                return response()->json([
+                    'error'=>false,
+                    'message' => "The genres has been retrieved successfully",
+                    'visuals'=> $yearQuery
+                ],200);
+            }
+
+
+            if ($language) {
+                $languageQuery = Visual::whereHas('languages', function ($query) use ($request) {
+                    if ($language = $request->get('language')) {
+                        $query
+                            ->where('type_id', 3)
+                            ->where('language_in_english', $language)
+                            ->orWhere('language_in_arabic', $language)
+                        ;
+                    }
+                })->paginate(10);
+
+                return response()->json([
+                    'error'=>false,
+                    'message' => "The " . $language .  " movies has been retrieved successfully",
+                    'visuals'=> $languageQuery
+                ],200);
+            }
+
 
             // recheck the code.. make it for the types, ... and also provide sorting options
 
