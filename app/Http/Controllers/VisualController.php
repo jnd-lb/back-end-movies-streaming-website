@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Visual;
+use App\Genre;
 use Illuminate\Http\Request;
 
 class VisualController extends Controller
@@ -15,25 +16,7 @@ class VisualController extends Controller
     public function index()
     {
         
-        try{
-                $visuals = Visual::orderBy('movie_title','ASC')
-                ->with('genre')
-                ->get();
-                
-            if($visuals){ 
-                return response($visuals);
-            }
-            return response()->json([
-                'message'=>"empty"
-            ], 404);
-            }
-            catch(Exception $e)
-            {
-                return response()->json([
-                    'message'=> $e
-        
-                ],500);
-            };
+        // 
     }
 
     /**
@@ -63,59 +46,92 @@ class VisualController extends Controller
      * @param  \App\Visual  $visual
      * @return \Illuminate\Http\Response
      */
-    public function show( $filter ,$param)
+    public function show( Request  $request)
     {
-        if($filter=='type')
-        {
-            if($param =='serie')
-            {
-               
-                $visuals = Visual::with('type')
-                ->where('type_id',3)
-                ->with('genre')
-                ->with('visualDescription')
-                ->get();
-                return response($visuals);
-            }
-            else if($param=='tv show')
-            {
-               
-                $visuals = Visual::with('type')
-                ->where('type_id',1)
-                ->with('genre')
-                ->with('visualDescription')
-                ->get();
-                return response($visuals);
-            }else if($param=='movie')
-            {
-               
-                $visuals = Visual::with('type')
-                ->where('type_id',2)
-                ->with('genre')
-                ->with('visualDescription')
-                ->get();
-                return response($visuals);
-            }else
-            {
-                return response()->json([
-                    'message'=>"params not found"
-                ], 404);
-            }
-        }
-        else if($filter=='year')
+        if($request->get('type'))
         {
             
-            $visuals = Visual::whereYear('year', $param)
+            $visuals = Visual::whereHas('type', function($q)use ($request){
+                $q->where('type_id',1)->orWhere('type_id',2)->where('type_in_english', '=', $request->get('type'));
+            })
             ->with('type')
             ->with('genre')
             ->with('visualDescription')
-            ->get();
-            return response($visuals);
+            ->orderBy('movie_title','ASC')
+            ->paginate(10);
+            return response()->json([
+                'data'=>$visuals
+            ],200);
+           
+            
+        } else
+        {
+            return response()->json([
+                'message'=>" Not found"
+            ], 404);
+        }
+         if($request->get('genre'))
+        {
+
+            $visuals = Visual::whereHas('genre', function($q)use ($request){
+                $q->where('type_id',1)
+                ->orWhere('type_id',2)
+                ->where('genre_in_english', '=', $request->get('genre'));
+            })
+            
+            ->with('genre')
+            ->with('visualDescription')
+            ->orderBy('movie_title','ASC')
+            ->paginate(10);
+
+            return response()->json([
+                'data'=>$visuals
+            ],200);
+                    
+     
+        } else
+        {
+            return response()->json([
+                'message'=>"Not found"
+            ], 404);
+        }
+        
+         if($request->get('year'))
+        {
+            
+            $visuals = Visual::where('type_id', 1)->orWhere('type_id',2)
+            ->whereYear('year', $request->get('year'))
+            ->with('genre')
+            ->with('visualDescription')
+            ->orderBy('movie_title','ASC')
+            ->paginate(10);;
+                return response()->json([
+                    'data'=>$visuals
+                ],200);
+            
+        } else
+        {
+            return response()->json([
+                'message'=>"Not found"
+            ], 404);
+        }
+         if($request->get('name'))
+        {
+            $visuals = Visual::where('movie_title','LIKE','%'.$request->get('name').'%')
+            ->where('type_id',1)->orWhere('type_id',2)
+            ->with('type')
+            ->with('genre')
+            ->with('visualDescription')
+            ->orderBy('movie_title','ASC')
+            ->paginate(10);;
+            return response()->json([
+                'data'=>$visuals
+            ]);
         }
         else
         {
             return response()->json([
-                'message'=>"params not found"
+                'message'=>"Not found"
             ], 404);
         }
     }
@@ -130,27 +146,102 @@ class VisualController extends Controller
                 ->with('episode')
                 ->with('visualDescription')
                 ->get();
+                
                 return response($visuals);
            
-                return response()->json([
-                    'message'=>"params not found"
-                ], 404);
+                
                 
     }
-    public function showByName($name)
+    public function showHome( Request $request)
     {
-               // dd($name);
-                $visuals = Visual::where('movie_title',$name)
-                ->with('type')
-                ->with('genre')
-                ->get();
-                return response($visuals);
-           
+        if($request->get('type'))
+        {
+            
+            $home = Visual::whereHas('type', function($q)use ($request){
+                $q->where('type_in_english', '=', $request->get('type'));
+            })
+            ->with('type')
+            ->with('genre')
+            ->with('visualDescription')
+            ->orderBy('movie_title','ASC')
+            ->paginate(10);
                 return response()->json([
-                    'message'=>"params not found"
-                ], 404);
-          
+                    'message'=>$home
+                ],200);
+           
+            
+        } else
+        {
+            return response()->json([
+                'message'=>"Not found"
+            ], 404);
+        }
+         if($request->get('genre'))
+        {
+
+            $home = Visual::whereHas('genre', function($q)use ($request){
+                $q 
+                
+                ->where('genre_in_english', '=', $request->get('genre'));
+            })
+            ->with('type')
+            ->with('genre')
+            ->with('visualDescription')
+            ->orderBy('movie_title','ASC')
+            ->paginate(10);
+
+            return response()->json([
+                'message'=>$home
+            ],200);
+                    
+     
+        } else
+        {
+            return response()->json([
+                'message'=>"Not found"
+            ], 404);
+        }
+        
+         if($request->get('year'))
+        {
+            
+            $home = Visual::with('type')
+            ->whereYear('year', $request->get('year'))
+            ->with('genre')
+            ->with('visualDescription')
+            ->orderBy('movie_title','ASC')
+            ->paginate(10);;
+                return response()->json([
+                    'message'=>$home
+                ],200);
+        } else
+        {
+            return response()->json([
+                'message'=>"Not found"
+            ], 404);
+        }
+         if($request->get('name'))
+        {
+            $home = Visual::where('movie_title','LIKE','%'.$request->get('name').'%')
+            ->with('type')
+            ->with('genre')
+            ->with('visualDescription')
+            ->orderBy('movie_title','ASC')
+            ->paginate(10);;
+            return response()->json([
+                'data'=>$home
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'message'=>"params not found"
+            ], 404);
+        }
+               
+                
     }
+   
     /**
      * Show the form for editing the specified resource.
      *

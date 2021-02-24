@@ -11,6 +11,6 @@ class Type extends Model
     
     public function visual()
     {
-        return $this->hasmany (Visual::class);
+        return $this->hasmany (Visual::class,'type_id');
     }
 }

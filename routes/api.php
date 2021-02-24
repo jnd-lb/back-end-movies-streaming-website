@@ -19,7 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::get('/episodes','EpisodeController@index');
 Route::get('/episode/{name}','EpisodeController@show');
-Route::get('/visuals/{filter}/{param}','VisualController@show');
-Route::get('/visuals','VisualController@index');
+Route::get('/visuals/search','VisualController@show');
+Route::get('/home/search','VisualController@showHome');
 Route::get('/visuals/{id}','VisualController@showById');
-Route::get('/visualsByName/{name}','VisualController@showByName');
+
