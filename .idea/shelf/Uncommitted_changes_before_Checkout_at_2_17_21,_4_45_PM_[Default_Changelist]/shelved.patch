@@ -1,0 +1,211 @@
+Index: database/migrations/2021_02_14_222747_create_episodes_table.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?php\n\nuse Illuminate\\Database\\Migrations\\Migration;\nuse Illuminate\\Database\\Schema\\Blueprint;\nuse Illuminate\\Support\\Facades\\Schema;\n\nclass CreateEpisodesTable extends Migration\n{\n    /**\n     * Run the migrations.\n     *\n     * @return void\n     */\n    public function up()\n    {\n        Schema::create('episodes', function (Blueprint $table) {\n            $table->id();\n            $table->string(\"episode_name\");\n            $table->unsignedBigInteger(\"visual_id\");\n            $table->foreign('visual_id')->references('id')->on('visuals');\n            $table->time(\"duration\");\n        });\n    }\n\n    /**\n     * Reverse the migrations.\n     *\n     * @return void\n     */\n    public function down()\n    {\n        Schema::dropIfExists('episodes');\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/database/migrations/2021_02_14_222747_create_episodes_table.php b/database/migrations/2021_02_14_222747_create_episodes_table.php
+--- a/database/migrations/2021_02_14_222747_create_episodes_table.php	(revision f2b2cb4f86e0db82c2a1c6beb07d73fb0be7fdef)
++++ b/database/migrations/2021_02_14_222747_create_episodes_table.php	(date 1613553642519)
+@@ -19,6 +19,7 @@
+             $table->unsignedBigInteger("visual_id");
+             $table->foreign('visual_id')->references('id')->on('visuals');
+             $table->time("duration");
++            $table->timestamp();
+         });
+     }
+
+Index: app/Http/Controllers/VisualController.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?php\n\nnamespace App\\Http\\Controllers;\n\nuse App\\Http\\Requests\\StoreVisualRequest;\nuse App\\Visual;\nuse Illuminate\\Support\\Facades\\Validator;\nuse Illuminate\\Http\\Request;\n\nclass VisualController extends Controller\n{\n    /**\n     * Display a listing of the resource.\n     *\n     * @return \\Illuminate\\Http\\Response\n     */\n    public function index()\n    {\n        //\n    }\n\n    /**\n     * Store a newly created resource in storage.\n     *\n     * @param  \\Illuminate\\Http\\Request  $request\n     * @return \\Illuminate\\Http\\Response\n     */\n    public function store(Request $request)\n    {\n        //\n    }\n\n    /**\n     * Display the specified resource.\n     *\n     * @param  int  $id\n     * @return \\Illuminate\\Http\\Response\n     */\n    public function show($id)\n    {\n        $visual = Visual::where('id',$id)->get();\n\n        if ($visual) {\n            return response()->json([\n                'message' => 'success retrieving visual with id '. $id,\n                'error' => false,\n                'data' => $visual\n            ]);\n        }\n        return response()->json([\n            'message' => 'failed getting speecified visual',\n            'error' => true,\n            'info' => error_log()\n        ]);\n    }\n\n    /**\n     * Display the specified resource.\n     *\n     * @param  \\Illuminate\\Http\\Request  $request\n     * @return \\Illuminate\\Http\\Response\n     */\n    public function searchByName(Request $request)\n    {\n        $visual = Visual::where([\n            ['movie_title', '!=', Null],\n            [function ($query) use ($request) {\n                if ($movie_title = $request->get('movie_title')) {\n                    $query->orWhere('movie_title', 'LIKE', '%'. $movie_title . '%')->get();\n                }\n            }]\n        ])\n            ->orderBy('movie_title', 'asc')\n            ->paginate(10)\n//            ->with('i', (request()->input('page', 1) - 1) * 5)\n        ;\n\n        if($visual) {\n            return response()->json([\n                'message' => 'visual found success',\n                'error' => false,\n                'data' => $visual,\n            ], 200);\n        }\n\n        return response()->json([\n            'message' => 'visual not found',\n            'error' => true,\n            'data' => error_log()\n        ], 404);\n    }\n\n\n    /**\n     * Display the specified resource.\n     *\n     * @param  \\Illuminate\\Http\\Request  $request\n     * @return \\Illuminate\\Http\\Response\n     */\n\n    public function getAllYears() {\n        $years = Visual::select('year')->get();\n\n        if ($years) {\n            return response()->json([\n                'message' => 'success returning years',\n                'error' => false,\n                'data' => $years,\n            ], 200);\n        }\n            return response()->json([\n                'message' => 'failed returning years',\n                'error' => true,\n            ], 404);\n\n    }\n\n    /**\n     * Store the specified resource in storage.\n     *\n     * @param  \\Illuminate\\Http\\Request  $request\n     * @return \\Illuminate\\Http\\Response\n     */\n    public function uploadVisual(Request $request)\n    {\n\n        $validator = Validator::make($request->all(), [\n            'movie_title'       => 'required|max:255',\n            'duration'          => 'required',\n            'language_id'       => 'required',\n            'description'       => 'string|required',\n            'movie_trailer'     => 'string|required',\n            'year'              => 'date|required',\n            'type_id'           => 'required',\n            'poster_image_link' => 'required|regex:/\\b(?:(?:https?|ftp):\\/\\/|www\\.)[-a-z0-9+&@#\\/%?=~_|!:,.;]*[-a-z0-9+&@#\\/%=~_|]/i',\n            'slug'              => 'string',\n        ]);\n\n        $visual = new Visual();\n        $visual->fill($request->all());\n        $visual->save();\n\n//        if ($request->hasFile('poster_image_link')) {\n//            $poster_image = $request->file('poster_image_link');\n//            $movie_name = $request->get('movie_title');\n//            $filename = $movie_name. '.' . $poster_image->getClientOriginalExtension();\n//            $poster_image->storeAs('public/images/'. $request->get('language_id'), $filename);\n//            $visual->poster_image_link = $filename;\n//        }\n\n        if ($visual) {\n            return response()->json([\n                'message' => 'successfully uploaded visual',\n                'error'   => false,\n                'data'    => $visual\n            ], 200);\n        }\n\n        return response()->json([\n            'message' => 'failed uploading visual',\n            'error' => true,\n            'data'  => error_log()\n        ], 404);\n    }\n\n    /**\n     * Update the specified resource in storage.\n     *\n     * @param  \\Illuminate\\Http\\Request  $request\n     * @param  int  $id\n     * @return \\Illuminate\\Http\\Response\n     */\n    public function update(Request $request, $id)\n    {\n        $visual = Visual::findOrFail($id);\n\n        if ($visual) {\n            $visual->update($request->all());\n\n            return response()->json([\n                'meesage' => 'visual updated',\n                'error' => false,\n                'data' => $visual\n            ], 200);\n        } else {\n\n            return response()->json([\n                'message' => 'failed updating visual',\n                'error' => true,\n            ], 404);\n        }\n\n\n    }\n\n    /**\n     * Remove the specified resource from storage.\n     *\n     * @param  int  $id\n     * @return \\Illuminate\\Http\\Response\n     */\n    public function destroy($id)\n    {\n        $visual = Visual::findOrFail($id);\n\n        if ($visual) {\n            $visual->delete();\n            return response()->json([\n                'message' => 'successfully deleted visual with id = '. $id,\n                'error' => false\n            ], 200);\n        }\n\n        return response()->json([\n            'message' => 'failed deletion.. visual not found',\n            'error' => true,\n        ], 404);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/Http/Controllers/VisualController.php b/app/Http/Controllers/VisualController.php
+--- a/app/Http/Controllers/VisualController.php	(revision f2b2cb4f86e0db82c2a1c6beb07d73fb0be7fdef)
++++ b/app/Http/Controllers/VisualController.php	(date 1613553425489)
+@@ -70,6 +70,8 @@
+                 }
+             }]
+         ])
++            ->with('languages')
++            ->with('types')
+             ->orderBy('movie_title', 'asc')
+             ->paginate(10)
+ //            ->with('i', (request()->input('page', 1) - 1) * 5)
+@@ -152,7 +154,7 @@
+             return response()->json([
+                 'message' => 'successfully uploaded visual',
+                 'error'   => false,
+-                'data'    => $visual
++                'data'    => $visual->with('languages', 'types')
+             ], 200);
+         }
+
+@@ -180,7 +182,7 @@
+             return response()->json([
+                 'meesage' => 'visual updated',
+                 'error' => false,
+-                'data' => $visual
++                'data' => $visual->with('languages', 'types')
+             ], 200);
+         } else {
+
+Index: app/Episode.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?php\n\nnamespace App;\n\nuse Illuminate\\Database\\Eloquent\\Model;\nuse phpDocumentor\\Reflection\\Utils;\n\nclass Episode extends Model\n{\n    protected $fillable = ['episode_name', 'visual_id', 'duration'];\n\n    public function visuals() {\n        return $this->belongsTo(Visual::class);\n    }\n\n    public function streaming_links() {\n        return $this->belongsToMany(Streaming_link::class);\n    }\n\n    public function download_links(){\n        return $this->belongsToMany(Streaming_link::class);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/Episode.php b/app/Episode.php
+--- a/app/Episode.php	(revision f2b2cb4f86e0db82c2a1c6beb07d73fb0be7fdef)
++++ b/app/Episode.php	(date 1613553234549)
+@@ -7,7 +7,11 @@
+
+ class Episode extends Model
+ {
+-    protected $fillable = ['episode_name', 'visual_id', 'duration'];
++    protected $fillable = [
++        'episode_name',
++        'visual_id',
++        'duration'
++    ];
+
+     public function visuals() {
+         return $this->belongsTo(Visual::class);
+Index: app/Http/Controllers/EpisodeController.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/Http/Controllers/EpisodeController.php b/app/Http/Controllers/EpisodeController.php
+new file mode 100644
+--- /dev/null	(date 1613555995369)
++++ b/app/Http/Controllers/EpisodeController.php	(date 1613555995369)
+@@ -0,0 +1,82 @@
++<?php
++
++namespace App\Http\Controllers;
++
++use App\Episode;
++use Exception;
++use Illuminate\Http\Request;
++use Illuminate\Support\Facades\Validator;
++
++class EpisodeController extends Controller
++{
++     public function create(Request $request){
++
++         $validator = Validator::make($request->all(), [
++             'episode_name' => 'required|string',
++             'visual_id' => 'required|int',
++             'duration' => 'time'
++         ]);
++
++        try{
++        //
++        $episode = Episode::create(array(
++            $request->all()
++        ));
++
++        return response()->json([
++            'error' => false,
++            'message' => "The Episode has been added successfully",
++            'data' => $episode,
++        ],201);
++
++    }catch (\Illuminate\Database\QueryException $exception) {
++            $errorInfo = $exception->errorInfo;
++            return response()->json([
++                'error' => true,
++                'message' => "Internal error occured",
++                'errormessage' => $errorInfo
++            ],500);
++        }
++    }
++
++   public function retrieve(Request $request){
++      try{
++          $X = Episode::paginate();
++          return response()->json([
++              'error'=>false,
++              'X'=>$X
++          ],200);
++      }
++      catch(\Illuminate\Database\QueryException $exception){
++        $errorInfo = $exception->errorInfo;
++        return response()->json([
++            'error' => true,
++            'message' => "Internal error occured"
++        ],500);
++      }
++
++    }
++
++    public function update(Request $request,$id){
++       try{
++           $X = Episode::where('id', '=', $id)->first();
++           //$X->name = $request['name'];
++           $X->save();
++           return response()->json([
++            'error'=>false,
++            'message'=>'The Episode has been updated successfully',
++            'X'=>$X
++           ],200);
++       }
++      catch(\Illuminate\Database\QueryException $exception){
++        $errorInfo = $exception->errorInfo;
++        return response()->json([
++            'error' => true,
++            'message' => "Internal error occured"
++        ],500);
++       }
++    }
++
++}
++
++
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"c9e828dc-98f7-4aa6-b1bd-29a22e2b3cb4\" name=\"Default Changelist\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/app/Http/Controllers/VisualController.php\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/app/Http/Controllers/VisualController.php\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/routes/api.php\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/routes/api.php\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"ComposerSettings\" doNotAsk=\"true\" synchronizationState=\"SYNCHRONIZE\">\n    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>\n    <execution />\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"ali-traboulsi-feature-searchByName\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"PhpWorkspaceProjectConfiguration\">\n    <include_path>\n      <path value=\"$PROJECT_DIR$/vendor/phpdocumentor/reflection-common\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpdocumentor/type-resolver\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock\" />\n      <path value=\"$PROJECT_DIR$/vendor/tijsverkoyen/css-to-inline-styles\" />\n      <path value=\"$PROJECT_DIR$/vendor/dragonmantank/cron-expression\" />\n      <path value=\"$PROJECT_DIR$/vendor/nunomaduro/collision\" />\n      <path value=\"$PROJECT_DIR$/vendor/swiftmailer/swiftmailer\" />\n      <path value=\"$PROJECT_DIR$/vendor/guzzlehttp/guzzle\" />\n      <path value=\"$PROJECT_DIR$/vendor/guzzlehttp/psr7\" />\n      <path value=\"$PROJECT_DIR$/vendor/webmozart/assert\" />\n      <path value=\"$PROJECT_DIR$/vendor/guzzlehttp/promises\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/recursion-context\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/object-enumerator\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/diff\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/lines-of-code\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/code-unit-reverse-lookup\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/environment\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/code-unit\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/type\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/resource-operations\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/comparator\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/complexity\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/exporter\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/object-reflector\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/cli-parser\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/global-state\" />\n      <path value=\"$PROJECT_DIR$/vendor/sebastian/version\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpoption/phpoption\" />\n      <path value=\"$PROJECT_DIR$/vendor/ralouphie/getallheaders\" />\n      <path value=\"$PROJECT_DIR$/vendor/fideloper/proxy\" />\n      <path value=\"$PROJECT_DIR$/vendor/fruitcake/laravel-cors\" />\n      <path value=\"$PROJECT_DIR$/vendor/fakerphp/faker\" />\n      <path value=\"$PROJECT_DIR$/vendor/hamcrest/hamcrest-php\" />\n      <path value=\"$PROJECT_DIR$/vendor/doctrine/inflector\" />\n      <path value=\"$PROJECT_DIR$/vendor/doctrine/instantiator\" />\n      <path value=\"$PROJECT_DIR$/vendor/doctrine/lexer\" />\n      <path value=\"$PROJECT_DIR$/vendor/theseer/tokenizer\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/event-dispatcher\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/routing\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/http-foundation\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/error-handler\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/translation\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/polyfill-php80\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/polyfill-iconv\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/process\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/http-kernel\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/console\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/mime\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/polyfill-intl-idn\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/polyfill-php72\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/translation-contracts\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/http-client-contracts\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/var-dumper\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/polyfill-php73\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/finder\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/polyfill-ctype\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/polyfill-mbstring\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/polyfill-intl-normalizer\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/polyfill-intl-grapheme\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/css-selector\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/event-dispatcher-contracts\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/deprecation-contracts\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/string\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpunit/php-invoker\" />\n      <path value=\"$PROJECT_DIR$/vendor/symfony/service-contracts\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpunit/php-text-template\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpunit/php-code-coverage\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpunit/php-file-iterator\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpunit/php-timer\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpspec/prophecy\" />\n      <path value=\"$PROJECT_DIR$/vendor/phpunit/phpunit\" />\n      <path value=\"$PROJECT_DIR$/vendor/phar-io/manifest\" />\n      <path value=\"$PROJECT_DIR$/vendor/phar-io/version\" />\n      <path value=\"$PROJECT_DIR$/vendor/monolog/monolog\" />\n      <path value=\"$PROJECT_DIR$/vendor/myclabs/deep-copy\" />\n      <path value=\"$PROJECT_DIR$/vendor/laravel/tinker\" />\n      <path value=\"$PROJECT_DIR$/vendor/mockery/mockery\" />\n      <path value=\"$PROJECT_DIR$/vendor/egulias/email-validator\" />\n      <path value=\"$PROJECT_DIR$/vendor/laravel/framework\" />\n      <path value=\"$PROJECT_DIR$/vendor/vlucas/phpdotenv\" />\n      <path value=\"$PROJECT_DIR$/vendor/dnoegel/php-xdg-base-dir\" />\n      <path value=\"$PROJECT_DIR$/vendor/ramsey/uuid\" />\n      <path value=\"$PROJECT_DIR$/vendor/ramsey/collection\" />\n      <path value=\"$PROJECT_DIR$/vendor/league/mime-type-detection\" />\n      <path value=\"$PROJECT_DIR$/vendor/nesbot/carbon\" />\n      <path value=\"$PROJECT_DIR$/vendor/league/commonmark\" />\n      <path value=\"$PROJECT_DIR$/vendor/league/flysystem\" />\n      <path value=\"$PROJECT_DIR$/vendor/facade/flare-client-php\" />\n      <path value=\"$PROJECT_DIR$/vendor/facade/ignition\" />\n      <path value=\"$PROJECT_DIR$/vendor/nikic/php-parser\" />\n      <path value=\"$PROJECT_DIR$/vendor/facade/ignition-contracts\" />\n      <path value=\"$PROJECT_DIR$/vendor/asm89/stack-cors\" />\n      <path value=\"$PROJECT_DIR$/vendor/brick/math\" />\n      <path value=\"$PROJECT_DIR$/vendor/opis/closure\" />\n      <path value=\"$PROJECT_DIR$/vendor/voku/portable-ascii\" />\n      <path value=\"$PROJECT_DIR$/vendor/psy/psysh\" />\n      <path value=\"$PROJECT_DIR$/vendor/filp/whoops\" />\n      <path value=\"$PROJECT_DIR$/vendor/psr/event-dispatcher\" />\n      <path value=\"$PROJECT_DIR$/vendor/psr/http-message\" />\n      <path value=\"$PROJECT_DIR$/vendor/psr/log\" />\n      <path value=\"$PROJECT_DIR$/vendor/psr/simple-cache\" />\n      <path value=\"$PROJECT_DIR$/vendor/psr/http-client\" />\n      <path value=\"$PROJECT_DIR$/vendor/psr/container\" />\n      <path value=\"$PROJECT_DIR$/vendor/composer\" />\n    </include_path>\n  </component>\n  <component name=\"ProjectId\" id=\"1oXMfSkMNhgC9JXrnnuy9Siiu5m\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\n    <property name=\"WebServerToolWindowFactoryState\" value=\"false\" />\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$\" />\n    <property name=\"nodejs_package_manager_path\" value=\"npm\" />\n    <property name=\"settings.editor.selected.configurable\" value=\"preferences.lookFeel\" />\n    <property name=\"vue.rearranger.settings.migration\" value=\"true\" />\n  </component>\n  <component name=\"RunManager\">\n    <configuration name=\"phpunit.xml\" type=\"PHPUnitRunConfigurationType\" factoryName=\"PHPUnit\">\n      <TestRunner scope=\"XML\" />\n      <method v=\"2\" />\n    </configuration>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"c9e828dc-98f7-4aa6-b1bd-29a22e2b3cb4\" name=\"Default Changelist\" comment=\"\" />\n      <created>1613428585302</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1613428585302</updated>\n      <workItem from=\"1613428587880\" duration=\"15644000\" />\n      <workItem from=\"1613474879240\" duration=\"18367000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n    <option name=\"oldMeFiltersMigrated\" value=\"true\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision f2b2cb4f86e0db82c2a1c6beb07d73fb0be7fdef)
++++ b/.idea/workspace.xml	(date 1613573069179)
+@@ -2,9 +2,11 @@
+ <project version="4">
+   <component name="ChangeListManager">
+     <list default="true" id="c9e828dc-98f7-4aa6-b1bd-29a22e2b3cb4" name="Default Changelist" comment="">
++      <change afterPath="$PROJECT_DIR$/app/Http/Controllers/EpisodeController.php" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/app/Episode.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Episode.php" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/VisualController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/VisualController.php" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/database/migrations/2021_02_14_222747_create_episodes_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2021_02_14_222747_create_episodes_table.php" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -18,7 +20,7 @@
+   <component name="Git.Settings">
+     <option name="RECENT_BRANCH_BY_REPOSITORY">
+       <map>
+-        <entry key="$PROJECT_DIR$" value="ali-traboulsi-feature-searchByName" />
++        <entry key="$PROJECT_DIR$" value="ali-traboulsi-feature-visualController-crud" />
+       </map>
+     </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+@@ -161,7 +163,7 @@
+       <option name="presentableId" value="Default" />
+       <updated>1613428585302</updated>
+       <workItem from="1613428587880" duration="15644000" />
+-      <workItem from="1613474879240" duration="18367000" />
++      <workItem from="1613474879240" duration="25025000" />
+     </task>
+     <servers />
+   </component>
