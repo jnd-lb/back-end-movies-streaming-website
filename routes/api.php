@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('/episodes','EpisodeController@index');
 Route::get('/episode/{name}','EpisodeController@show');
 Route::get('/visuals/search','VisualController@show');
-Route::get('/home/search','VisualController@showHome');
+Route::get('/visuals/','VisualController@getAll');
+Route::get('/home/genre','VisualController@showHome');
 Route::get('/visuals/{id}','VisualController@showById');
-
+Route::get('/visuals/genre','VisualController@getVisualsByGenre');

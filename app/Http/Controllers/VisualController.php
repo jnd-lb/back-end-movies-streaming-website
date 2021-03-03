@@ -52,78 +52,79 @@ class VisualController extends Controller
         {
             
             $visuals = Visual::whereHas('type', function($q)use ($request){
-                $q->where('type_id',1)->orWhere('type_id',2)->where('type_in_english', '=', $request->get('type'));
+                $q->where('type_in_english', '=', $request->get('type'));
             })
             ->with('type')
             ->with('genre')
             ->with('visualDescription')
             ->orderBy('movie_title','ASC')
             ->paginate(10);
+            
             return response()->json([
                 'data'=>$visuals
             ],200);
            
             
-        } else
-        {
-            return response()->json([
-                'message'=>" Not found"
-            ], 404);
-        }
+        } 
          if($request->get('genre'))
         {
-
+            
             $visuals = Visual::whereHas('genre', function($q)use ($request){
-                $q->where('type_id',1)
-                ->orWhere('type_id',2)
+                $q
                 ->where('genre_in_english', '=', $request->get('genre'));
             })
-            
+            ->whith('type')
             ->with('genre')
             ->with('visualDescription')
             ->orderBy('movie_title','ASC')
             ->paginate(10);
-
+            
+            
+           
             return response()->json([
                 'data'=>$visuals
             ],200);
                     
      
-        } else
-        {
-            return response()->json([
-                'message'=>"Not found"
-            ], 404);
-        }
+        } 
         
          if($request->get('year'))
         {
             
-            $visuals = Visual::where('type_id', 1)->orWhere('type_id',2)
-            ->whereYear('year', $request->get('year'))
-            ->with('genre')
-            ->with('visualDescription')
-            ->orderBy('movie_title','ASC')
-            ->paginate(10);;
-                return response()->json([
-                    'data'=>$visuals
-                ],200);
+                
+            $visuals = Visual::where( function($q)use ($request){
+                $q
+                ->Where('type_id',2)
+                ->whereYear('year', '=', $request->get('year'))
+                ->orWhere('type_id',1)
+                ->whereYear('year', '=', $request->get('year'));
+            })
             
-        } else
-        {
-            return response()->json([
-                'message'=>"Not found"
-            ], 404);
-        }
-         if($request->get('name'))
-        {
-            $visuals = Visual::where('movie_title','LIKE','%'.$request->get('name').'%')
-            ->where('type_id',1)->orWhere('type_id',2)
             ->with('type')
             ->with('genre')
             ->with('visualDescription')
             ->orderBy('movie_title','ASC')
-            ->paginate(10);;
+            ->paginate(10);
+           
+                return response()->json([
+                    'data'=>$visuals
+                ],200);
+            
+        } 
+         if($request->get('name'))
+        {
+            $visuals = Visual::where( function($q)use ($request){
+                $q->where('type_id',1)
+                ->where('movie_title','LIKE','%'.$request->get('name').'%')
+                ->orWhere('type_id',2)
+                ->where('movie_title','LIKE','%'.$request->get('name').'%');
+            })
+            ->with('type')
+            ->with('genre')
+            ->with('visualDescription')
+            ->orderBy('movie_title','ASC')
+            ->paginate(10);
+            
             return response()->json([
                 'data'=>$visuals
             ]);
@@ -152,6 +153,8 @@ class VisualController extends Controller
                 
                 
     }
+
+
     public function showHome( Request $request)
     {
         if($request->get('type'))
@@ -166,16 +169,13 @@ class VisualController extends Controller
             ->orderBy('movie_title','ASC')
             ->paginate(10);
                 return response()->json([
-                    'message'=>$home
+                    "data"=>$home,
+                    'message'=>"Data Found"
                 ],200);
            
             
-        } else
-        {
-            return response()->json([
-                'message'=>"Not found"
-            ], 404);
-        }
+        } 
+        
          if($request->get('genre'))
         {
 
@@ -195,12 +195,7 @@ class VisualController extends Controller
             ],200);
                     
      
-        } else
-        {
-            return response()->json([
-                'message'=>"Not found"
-            ], 404);
-        }
+        } 
         
          if($request->get('year'))
         {
@@ -210,16 +205,12 @@ class VisualController extends Controller
             ->with('genre')
             ->with('visualDescription')
             ->orderBy('movie_title','ASC')
-            ->paginate(10);;
+            ->paginate(10);
+
                 return response()->json([
                     'message'=>$home
                 ],200);
-        } else
-        {
-            return response()->json([
-                'message'=>"Not found"
-            ], 404);
-        }
+        } 
          if($request->get('name'))
         {
             $home = Visual::where('movie_title','LIKE','%'.$request->get('name').'%')
@@ -227,7 +218,8 @@ class VisualController extends Controller
             ->with('genre')
             ->with('visualDescription')
             ->orderBy('movie_title','ASC')
-            ->paginate(10);;
+            ->paginate(10);
+
             return response()->json([
                 'data'=>$home
             ]);
@@ -240,6 +232,21 @@ class VisualController extends Controller
         }
                
                 
+    }
+
+    public function getAll(){
+        $home = Visual
+        ::with('type')
+        ->with('genre')
+        ->with('visualDescription')
+        ->orderBy('movie_title','ASC')
+        ->paginate(10);
+
+        
+        return response()->json([
+            "data"=>$home,
+            'message'=>"Data Found"
+        ],200);
     }
    
     /**
@@ -264,6 +271,7 @@ class VisualController extends Controller
     {
         //
     }
+
 
     /**
      * Remove the specified resource from storage.
