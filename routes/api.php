@@ -18,15 +18,21 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | Movie Routes
 |--------------------------------------------------------------------------
 */
-
+Route::get('/movie/{id}','VisualController@showById');
+Route::get('/visuals/search','VisualController@show');
+Route::get('/visuals/','VisualController@getAll');
+Route::get('/home/genre','VisualController@showHome');
+Route::get('/visuals/{id}','VisualController@showById');
+Route::get('/visuals/genre','VisualController@getVisualsByGenre');  
+  
 Route::get('visual', 'MovieController@searchByName');
 Route::get('visual/search', 'MovieController@searchBy');
-
 Route::get('visual/years', 'MovieController@getAllYears');
 Route::get('visual/{id}', 'MovieController@show');
 Route::get('visual', 'MovieController@retrieve');
@@ -49,6 +55,9 @@ Route::get('mgenres/{id}', 'MovieController@getGenres');
 | Episode Routes
 |--------------------------------------------------------------------------
 */
+//Route::get('/episodes','EpisodeController@index');
+
+//Route::get('/episode/{name}','EpisodeController@show');
 Route::post('episode', 'EpisodeController@uploadEpisode');
 Route::get('episode/{id}', 'EpisodeController@getAllEpisodes');
 Route::get('episode', 'EpisodeController@retrieve');
@@ -62,7 +71,6 @@ Route::get('episode', 'EpisodeController@retrieve');
 */
 Route::post('slink', 'StreamingLinkController@create');
 
-
 /*
 |--------------------------------------------------------------------------
 | Download_links Routes
@@ -72,4 +80,3 @@ Route::post('dlink', 'DownloadLinkController@create');
 Route::get('dlink', 'DownloadLinkController@retrieve');
 Route::put('dlink/{id}', 'DownloadLinkController@update');
 Route::delete('dlink/{id}', 'DownloadLinkController@destroy');
-

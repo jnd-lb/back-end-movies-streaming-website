@@ -11,6 +11,33 @@ use Illuminate\Http\Request;
 class EpisodeController extends Controller
 {
 
+   /**
+     * Display the specified resource.
+     *
+     * @param  \App\Episode  $episode
+     * @return \Illuminate\Http\Response
+     */
+    public function show($name)
+    {
+        $episode = Episode::where('episode_name',$name)
+        ->with('episodeStreamingLinks')
+        ->with('downloadLinks')
+        ->get();
+        return response()->json([
+            'data'=> $episode,
+        ],200);
+
+        return response()->json([
+            'message'=>'Not Found'
+        ],404);
+    }
+
+   public function index()
+    {
+        $episodes = Episode::with('episodeStreamingLinks')->get();
+        return response($episodes);
+    }
+
      public function uploadEpisode(Request $request){
 
         try{

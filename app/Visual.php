@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Visual extends Model
 {
+
+      protected $table= 'visuals';
+    
+
     protected $fillable = [
         'movie_title',
         'duration',
@@ -30,7 +34,12 @@ class Visual extends Model
     public function episodes() {
         return $this->hasMany(Episode::class);
     }
-
+  public function episode()
+    {
+         return $this->hasmany(Episode::class)
+         ->with('downloadLinks')
+         ->with('episodeStreamingLinks');
+    }  
     public function streaming_links() {
         return $this->belongsToMany(
             Streaming_link::class,
@@ -44,10 +53,12 @@ class Visual extends Model
         return $this->belongsToMany(Download_link::class);
     }
 
-    public function genres() {
-       return $this->belongsToMany(Genre::class);
+   
+    public function genre()
+    {
+        return $this->belongsToMany(Genre::class,'genre_visuals','vidsual_id','genre_id');
     }
-
+  
     public function languages() {
         return $this->belongsTo(Language::class, 'language_id');
     }
@@ -55,7 +66,18 @@ class Visual extends Model
     public function descriptions() {
         return $this->hasOne(DescriptionVisual::class);
     }
+    
+    public function visualDescription()
+    {
+        return $this->hasMany(Visual_Description::class);
+    }
 
+  public function episode()
+    {
+         return $this->hasmany(Episode::class)
+         ->with('downloadLinks')
+         ->with('episodeStreamingLinks');
+    }  
 
 
 

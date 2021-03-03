@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Language extends Model
 {
+      protected $table = 'languages';
     protected $fillable = [
         'language_in_english',
         'language_in_arabic',
@@ -13,5 +14,6 @@ class Language extends Model
 
     public function visuals() {
         return $this->hasMany(Visual::class, 'language_id');
+
     }
 }
