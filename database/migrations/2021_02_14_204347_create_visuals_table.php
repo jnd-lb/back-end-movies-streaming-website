@@ -27,7 +27,6 @@ class CreateVisualsTable extends Migration
             $table->foreign('type_id')->references('id')->on('types');
             $table->string("poster_image_link")->nullable(false);
             $table->string("slug")->nullable(false);
-            $table->timestamps();
         });
     }
 

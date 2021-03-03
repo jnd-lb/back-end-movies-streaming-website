@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVisualsDescriptionTable extends Migration
+class CreateDescriptionVisualTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateVisualsDescriptionTable extends Migration
      */
     public function up()
     {
-        Schema::create('visuals_description', function (Blueprint $table) {
+        Schema::create('description_visual', function (Blueprint $table) {
             $table->id();
-            
+
             $table->unsignedBigInteger('visual_id');
             $table->foreign('visual_id')->references('id')->on('visuals');
-            
+
             $table->mediumText("description_in_arabic")->nullable(false);
             $table->mediumText("description_in_english")->nullable(false);
         });
@@ -31,6 +31,6 @@ class CreateVisualsDescriptionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('visuals_description');
+        Schema::dropIfExists('description_visual');
     }
 }

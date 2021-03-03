@@ -4,10 +4,27 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use phpDocumentor\Reflection\Utils;
+
 class Episode extends Model
 {
-    protected $table= 'episodes';
+    
+   protected $table= 'episodes';
     protected $fillable =['episode_name','visual_id','duration'];
+
+
+    public function visuals() {
+        return $this->belongsTo(Visual::class);
+    }
+
+    public function streaming_links() {
+        return $this->belongsToMany(Streaming_link::class);
+    }
+
+    public function download_links(){
+        return $this->belongsToMany(Streaming_link::class);
+
+    }
 
     public function downloadLinks()
     {
@@ -17,4 +34,5 @@ class Episode extends Model
     {
         return $this->belongsToMany('App\Stream_Link','episode_streaming_link','episode_id','streaming_link_id');
     }
+  
 }

@@ -17,6 +17,7 @@ class CreateStreamingLinksTable extends Migration
             $table->id();
             $table->mediumText("description");
             $table->string("link");
+//            $table->timestamps();
         });
     }
 

@@ -12,17 +12,18 @@ class TypesSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('types')->insert(
+        $types = [
             [
-              'type_in_arabic' => 'Serie',
-              'type_in_english' => 'مسلسل'
+                'type_in_english' => 'Serie',
+                'type_in_arabic' => 'مسلسل'
             ],[
-              'type_in_arabic' => 'Tv Show',
-              'type_in_english' => 'برنامج تلفزيوني'
+                'type_in_english' => 'Tv Show',
+                'type_in_arabic' => 'برنامج تلفزيوني'
             ],[
-              'type_in_arabic' => "Movie",
-              'type_in_english' => 'فيلم'
+                'type_in_english' => "Movie",
+                'type_in_arabic' => 'فيلم'
             ]
-    );
+        ];
+        DB::table('types')->insert($types);
     }
 }
