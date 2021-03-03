@@ -139,7 +139,6 @@ class VisualController extends Controller
 
     public function showById( $id)
     {
-       
                
                 $visuals = Visual::where('id',$id)
                 ->with('type')
@@ -149,11 +148,7 @@ class VisualController extends Controller
                 ->get();
                 
                 return response($visuals);
-           
-                
-                
     }
-
 
     public function showHome( Request $request)
     {
@@ -172,8 +167,6 @@ class VisualController extends Controller
                     "data"=>$home,
                     'message'=>"Data Found"
                 ],200);
-           
-            
         } 
         
          if($request->get('genre'))

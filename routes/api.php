@@ -24,3 +24,6 @@ Route::get('/visuals/','VisualController@getAll');
 Route::get('/home/genre','VisualController@showHome');
 Route::get('/visuals/{id}','VisualController@showById');
 Route::get('/visuals/genre','VisualController@getVisualsByGenre');
+
+//Movies
+Route::get('/movie/{id}','VisualController@showById');
