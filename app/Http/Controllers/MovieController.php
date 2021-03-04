@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Psy\Util\Str;
 use Symfony\Component\Console\Input\Input;
+use Illuminate\Support\Facades\DB;
+
 
 class MovieController extends Controller
 {
@@ -27,6 +29,8 @@ class MovieController extends Controller
         try{
 
             $visuals = Visual::with('genres')
+            ->with("types")
+            ->with("streaming_links")
                 ->orderBy('movie_title', 'asc')
                 ->paginate(10);
 
@@ -43,7 +47,6 @@ class MovieController extends Controller
                 'message' => "Internal error occured"
             ],500);
         }
-
     }
 
     /**
@@ -65,7 +68,13 @@ class MovieController extends Controller
      */
     public function show($id)
     {
-        $visual = Visual::where('id',$id)->get();
+        $visual = Visual::where('id',$id)->with('genre')
+            
+        ->with('types')
+        ->with('visualDescription')
+        ->orderBy('movie_title','ASC')
+        ->get();
+        
 
         if ($visual) {
             return response()->json([

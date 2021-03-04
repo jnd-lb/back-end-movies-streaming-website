@@ -48,14 +48,14 @@ class VisualController extends Controller
      */
     public function show( Request  $request)
     {
-        if($request->get('type'))
+        if($request->get('types'))
         {
             
             $visuals = Visual::whereHas('type', function($q)use ($request){
-                $q->where('type_in_english', '=', $request->get('type'));
+                $q->where('type_in_english', '=', $request->get('types'));
             })
-            ->with('type')
-            ->with('genre')
+            ->with('types')
+            ->with('genres')
             ->with('visualDescription')
             ->orderBy('movie_title','ASC')
             ->paginate(10);
@@ -64,8 +64,20 @@ class VisualController extends Controller
                 'data'=>$visuals
             ],200);
            
-            
         } 
+
+
+
+
+
+
+
+
+
+
+
+
+        
          if($request->get('genre'))
         {
             
@@ -139,15 +151,18 @@ class VisualController extends Controller
 
     public function showById( $id)
     {
+        
                
                 $visuals = Visual::where('id',$id)
-                ->with('type')
+                ->with('types')
                 ->with('genre')
                 ->with('episode')
                 ->with('visualDescription')
                 ->get();
                 
-                return response($visuals);
+                return response()->json([
+                    "data"=> $visuals
+                ]);
     }
 
     public function showHome( Request $request)
@@ -158,7 +173,7 @@ class VisualController extends Controller
             $home = Visual::whereHas('type', function($q)use ($request){
                 $q->where('type_in_english', '=', $request->get('type'));
             })
-            ->with('type')
+            ->with('types')
             ->with('genre')
             ->with('visualDescription')
             ->orderBy('movie_title','ASC')
@@ -172,19 +187,20 @@ class VisualController extends Controller
          if($request->get('genre'))
         {
 
-            $home = Visual::whereHas('genre', function($q)use ($request){
+            $visuals = Visual::whereHas('genre', function($q)use ($request){
                 $q 
                 
                 ->where('genre_in_english', '=', $request->get('genre'));
             })
-            ->with('type')
+            ->with('types')
             ->with('genre')
             ->with('visualDescription')
             ->orderBy('movie_title','ASC')
             ->paginate(10);
 
             return response()->json([
-                'message'=>$home
+                'message'=>"Data has been retrieved",
+                "data"=>$visuals
             ],200);
                     
      
@@ -226,31 +242,31 @@ class VisualController extends Controller
                
                 
     }
-
-    public function getAll(){
-        $home = Visual
-        ::with('type')
-        ->with('genre')
-        ->with('visualDescription')
-        ->orderBy('movie_title','ASC')
-        ->paginate(10);
-
-        
-        return response()->json([
-            "data"=>$home,
-            'message'=>"Data Found"
-        ],200);
-    }
-   
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Visual  $visual
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Visual $visual)
+    public function getVisualsByGenre( Request $request)
     {
-        //
+       
+        
+         if($request->query('genre'))
+        {
+            
+            $home = Visual::
+            with('type')
+            ->with('genre')
+            ->with('visualDescription')
+            ->whereHas('genres', function($q)use ($request){
+                $q 
+                
+              ;
+            })
+            ->orderBy('year','ASC')
+            ->where('genre_in_english', '=', $request->query('genre'))
+            ->paginate(10);
+
+            return response()->json([
+                'yuhvy'=>$home
+            ],200);
+                    
+        } 
     }
 
     /**

@@ -24,14 +24,15 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 | Movie Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/movie/{id}','VisualController@showById');
+Route::get('movie/{id}', 'MovieController@show');
+Route::get('/visuals/genre','VisualController@getVisualsByGenre');  
+//Route::get('/movie/{id}','VisualController@showById');
 Route::get('/visuals/search','VisualController@show');
 Route::get('/visuals/','VisualController@getAll');
 Route::get('/home/genre','VisualController@showHome');
 Route::get('/visuals/{id}','VisualController@showById');
-Route::get('/visuals/genre','VisualController@getVisualsByGenre');  
   
-Route::get('visual', 'MovieController@searchByName');
+//Route::get('visual', 'MovieController@searchByName');
 Route::get('visual/search', 'MovieController@searchBy');
 Route::get('visual/years', 'MovieController@getAllYears');
 Route::get('visual/{id}', 'MovieController@show');

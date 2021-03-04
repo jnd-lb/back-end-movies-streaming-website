@@ -31,6 +31,7 @@ class Visual extends Model
 
     // Ask about the language table (it should be many-to-many)
 
+
     public function episodes() {
         return $this->hasMany(Episode::class);
     }
@@ -56,7 +57,7 @@ class Visual extends Model
    
     public function genre()
     {
-        return $this->belongsToMany(Genre::class,'genre_visuals','vidsual_id','genre_id');
+        return $this->belongsToMany(Genre::class,'genre_visual','visual_id','genre_id');
     }
   
     public function languages() {
@@ -72,12 +73,6 @@ class Visual extends Model
         return $this->hasMany(Visual_Description::class);
     }
 
-  public function episode()
-    {
-         return $this->hasmany(Episode::class)
-         ->with('downloadLinks')
-         ->with('episodeStreamingLinks');
-    }  
 
 
 
